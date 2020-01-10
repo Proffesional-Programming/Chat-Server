@@ -44,7 +44,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.UserServiceTests.LoginTests">
+  <component name="RunManager" selected="JUnit.UserServiceTests (1)">
     <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="eiu.edu.vn.Main" />
       <module name="Programming Practices" />
@@ -64,6 +64,15 @@
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceTests (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="TestChat" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="UserServiceTests" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -92,9 +101,11 @@
       <item itemvalue="Application.Main (1)" />
       <item itemvalue="JUnit.UserServiceTests.LoginTests" />
       <item itemvalue="JUnit.UserServiceTests" />
+      <item itemvalue="JUnit.UserServiceTests (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.UserServiceTests (1)" />
         <item itemvalue="JUnit.UserServiceTests.LoginTests" />
         <item itemvalue="JUnit.UserServiceTests" />
         <item itemvalue="Application.Main (1)" />
@@ -112,7 +123,10 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1578620887006</updated>
-      <workItem from="1578620888830" duration="7795000" />
+      <workItem from="1578620888830" duration="7995000" />
+      <workItem from="1578628899708" duration="547000" />
+      <workItem from="1578634646825" duration="26000" />
+      <workItem from="1578634860822" duration="41000" />
     </task>
     <servers />
   </component>
@@ -154,6 +168,11 @@
             <option name="lambda-ordinal" value="-1" />
           </properties>
           <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/eiu/edu/vn/Services/UserService.java</url>
+          <line>25</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
