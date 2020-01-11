@@ -1,6 +1,7 @@
 import eiu.edu.vn.DataStore.DataStore;
 import eiu.edu.vn.Services.UserService;
-import junit.framework.Assert;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.security.NoSuchAlgorithmException;
