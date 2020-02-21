@@ -1,5 +1,9 @@
 package eiu.edu.vn.Models;
 
+import eiu.edu.vn.Controller.UserController;
+import eiu.edu.vn.Services.UserService;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class User {
@@ -10,11 +14,14 @@ public class User {
     private String firstName;
     private String hashPassword;
     private String fullName;
+    public ArrayList<Group> groups = new ArrayList<Group>();
+    public UserController userController;
 
     public User(UUID id, String userName, String hashPassword) {
         this.id = id;
         this.userName = userName;
         this.hashPassword = hashPassword;
+        userController = new UserController();
     }
 
     public User(UUID id, String userName, String password, String hashPassword, String fullName) {
@@ -23,6 +30,7 @@ public class User {
         this.password = password;
         this.hashPassword = hashPassword;
         this.fullName = fullName;
+        userController = new UserController();
     }
 
     
@@ -65,5 +73,6 @@ public class User {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+
 
 }

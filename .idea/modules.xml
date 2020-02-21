@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Programming Practices/Programming Practices.iml" filepath="$PROJECT_DIR$/Programming Practices/Programming Practices.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Programming Practices/TestChat/TestChat.iml" filepath="$PROJECT_DIR$/Programming Practices/TestChat/TestChat.iml" />
+    </modules>
+  </component>
+</project>
