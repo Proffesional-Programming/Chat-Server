@@ -13,9 +13,10 @@ import java.util.UUID;
 
 public class UserService {
     private DataStore store;
-    public ArrayList<User> lstUser;
-    public UserService(DataStore store) {
-        this.store = store;
+
+    public UserService() throws NoSuchAlgorithmException {
+        this.store = new DataStore();
+        createUser("admin", "admin");
     }
 
 
@@ -34,7 +35,7 @@ public class UserService {
     }
 
     public User Login(String userName, String password) throws NoSuchAlgorithmException {
-        var hashdedPassword = toHashPassword(getSHA(password));
+        String hashdedPassword = toHashPassword(getSHA(password));
         User findUser = store.lstUser.stream().filter(user -> userName.equals(user.getUserName()) && hashdedPassword.equals(user.getPassword()))
                 .findAny()
                 .orElse(null);

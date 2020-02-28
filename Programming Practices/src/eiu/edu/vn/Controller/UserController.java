@@ -1,39 +1,61 @@
 package eiu.edu.vn.Controller;
 
+import eiu.edu.vn.DataStore.DataStore;
 import eiu.edu.vn.Models.Group;
 import eiu.edu.vn.Models.PrivateGroup;
 import eiu.edu.vn.Models.PublicGroup;
 import eiu.edu.vn.Models.User;
-import eiu.edu.vn.Services.GroupService;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.UUID;
 
 public class UserController {
-    public GroupService groupService = new GroupService();
 
-    public boolean createGroup(boolean isPrivate, String nameGroup, User user) {
-        if (isPrivate == true) {
-            PrivateGroup priGroup = new PrivateGroup(nameGroup, user.getUserName(), user.getId().toString());
-            groupService.addGroup(priGroup);
+    DataStore data = new DataStore();
+
+    public User findFriend(String userName) {
+        User user = data.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null);
+        return user;
+    }
+
+    public String getCode() {
+        char data[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+                'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
+                'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+                'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+                'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6',
+                '7', '8', '9'};
+        char index[] = new char[7];
+        Random r = new Random();
+        int i = 0;
+        for (i = 0; i < (index.length); i++) {
+            int ran = r.nextInt(data.length);
+            index[i] = data[ran];
+        }
+        return new String(index);
+    }
+
+    public void createGroup(User owner, String nGroup, String userName, boolean isPrivate) {
+        if (isPrivate == false) {
+            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, userName, getCode());
+            owner.addGroup(pubGroup);
         } else {
-            PublicGroup pubGroup = new PublicGroup();
-            groupService.addGroup(pubGroup);
+            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, userName);
+            owner.addGroup(priGroup);
         }
-
-        return true;
     }
 
-    public void inviteFriend() {
-
-    }
-
-    public void sendMessage() {
-
-    }
-
-    public boolean delGroup(Group group) {
-        if (groupService.lstGroup().contains(group)) {
-            groupService.lstGroup().remove(group);
-            return true;
+    public void inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
+        User u = lstFriend.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
+        if (u != null) {
+            group.addMember(u);
         }
-        return false;
+    }
+
+    public void joinGroup(String code, User user, PublicGroup pubGroup) {
+        if (pubGroup.getCode().equals(code)) {
+            pubGroup.addMember(user);
+        }
     }
 }

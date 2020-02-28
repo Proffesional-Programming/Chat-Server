@@ -7,11 +7,9 @@ import org.junit.Test;
 import java.security.NoSuchAlgorithmException;
 
 public class UserServiceTests {
-    DataStore store = new DataStore();
-    UserService userService;
+    UserService userService = new UserService();
 
-    public UserServiceTests() {
-        this.userService = new UserService(this.store);
+    public UserServiceTests() throws NoSuchAlgorithmException {
     }
 
     @Test

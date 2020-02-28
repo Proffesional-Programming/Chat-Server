@@ -7,11 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataStore {
-    public List<User> lstUser;
-    public ArrayList<Group> lstGroup;
+    public ArrayList<User> lstUser;
 
     public DataStore() {
         this.lstUser = new ArrayList<User>();
-        this.lstGroup = new ArrayList<Group>();
     }
+
 }

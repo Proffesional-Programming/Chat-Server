@@ -5,13 +5,15 @@ import eiu.edu.vn.DataStore.DataStore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public abstract class Group {
+public class Group {
     public DataStore dataStore;
     private String nameGroup;
     private ArrayList<User> groupMembers;
     private ArrayList<Message> messages;
     private String ownerUser;
+    private UUID id;
 
     public Group() {
         this.nameGroup = nameGroup;
@@ -21,19 +23,13 @@ public abstract class Group {
         this.dataStore = new DataStore();
     }
 
-    public Group(String nameGroup, String ownerUser) {
+    public Group(UUID id, String nameGroup, String ownerUser) {
+        this.id = id;
         this.nameGroup = nameGroup;
         this.groupMembers = new ArrayList<User>();
         this.messages = new ArrayList<Message>();
         this.ownerUser = ownerUser;
         this.dataStore = new DataStore();
-    }
-
-    public boolean checkUserExist(User user) {
-        if (dataStore.lstUser.contains(user)) {
-            return true;
-        }
-        return false;
     }
 
     public int getSize() {
@@ -56,4 +52,7 @@ public abstract class Group {
         this.ownerUser = ownerUser;
     }
 
+    public void addMember(User user) {
+        groupMembers.add(user);
+    }
 }

@@ -14,7 +14,7 @@ public class User {
     private String firstName;
     private String hashPassword;
     private String fullName;
-    public ArrayList<Group> groups = new ArrayList<Group>();
+    private ArrayList<Group> groups = new ArrayList<Group>();
     public UserController userController;
 
     public User(UUID id, String userName, String hashPassword) {
@@ -33,16 +33,19 @@ public class User {
         userController = new UserController();
     }
 
-    
+    public void addGroup(Group group) {
+        groups.add(group);
+    }
+
     public UUID getId() {
-		return id;
-	}
+        return id;
+    }
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-	public String getUserName() {
+    public String getUserName() {
         return userName;
     }
 

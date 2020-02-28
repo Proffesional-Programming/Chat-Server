@@ -1,10 +1,10 @@
 package eiu.edu.vn.Models;
 
-public class PrivateGroup extends Group {
-    private String id;
+import java.util.UUID;
 
-    public PrivateGroup(String nameGroup, String ownerUser, String id) {
-        super(nameGroup, ownerUser);
-        this.id = id;
+public class PrivateGroup extends Group {
+    public PrivateGroup(UUID id, String nameGroup, String ownerUser) {
+        super(id, nameGroup, ownerUser);
     }
+
 }
