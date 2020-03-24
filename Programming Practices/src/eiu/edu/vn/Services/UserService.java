@@ -1,6 +1,7 @@
 package eiu.edu.vn.Services;
 
 import eiu.edu.vn.DataStore.DataStore;
+import eiu.edu.vn.Models.Message;
 import eiu.edu.vn.Models.PrivateGroup;
 import eiu.edu.vn.Models.User;
 
@@ -43,8 +44,9 @@ public class UserService {
 
     public boolean createUser(String userName, String password) throws NoSuchAlgorithmException {
         String hash = toHashPassword(getSHA(password));
+        ArrayList<Message> lstMessage = new ArrayList<Message>();
         boolean result = false;
-        User user = new User(UUID.randomUUID(), userName, hash);
+        User user = new User(UUID.randomUUID(), userName, hash, lstMessage);
         if (store.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null) == null) {
             result = store.lstUser.add(user);
         }

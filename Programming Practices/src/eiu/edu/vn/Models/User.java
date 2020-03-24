@@ -1,39 +1,55 @@
 package eiu.edu.vn.Models;
 
 import eiu.edu.vn.Controller.UserController;
-import eiu.edu.vn.DataStore.DataStore;
 import eiu.edu.vn.Services.UserService;
 
-import java.security.NoSuchAlgorithmException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class User {
+public class User extends Text {
     private UUID id;
     private String userName;
     private String password;
     private String lastName;
     private String firstName;
     private String hashPassword;
+    private ArrayList<Message> lstMessage = new ArrayList<Message>();
     private String fullName;
     private ArrayList<Group> groups = new ArrayList<Group>();
-    public UserController userController;
-    private DataStore store;
+    private UserController userController;
+    private String path = "./eiu/edu/vn/DataStore/";
 
-    public User(UUID id, String userName, String hashPassword) {
+    public User(UUID id, String userName, String hashPassword, ArrayList<Message> lstMessage) {
+        super(lstMessage);
         this.id = id;
         this.userName = userName;
         this.hashPassword = hashPassword;
-        userController = new UserController();
+        this.userController = new UserController();
+        this.path += id;
+        crtFolder(this.path);
     }
 
-    public User(UUID id, String userName, String password, String hashPassword, String fullName) {
+    public User(UUID id, String userName, String password, String hashPassword, String fullName, ArrayList<Message> lstMessage) {
+        super(lstMessage);
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.hashPassword = hashPassword;
         this.fullName = fullName;
-        userController = new UserController();
+        this.userController = new UserController();
+        this.path += id;
+        crtFolder(this.path);
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    private boolean crtFolder(String path) {
+        File file = new File(path);
+        boolean check = file.mkdir();
+        return check;
     }
 
     public void addGroup(Group group) {

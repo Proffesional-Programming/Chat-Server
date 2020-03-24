@@ -1,11 +1,13 @@
 package eiu.edu.vn.Controller;
 
 import eiu.edu.vn.DataStore.DataStore;
-import eiu.edu.vn.Models.Group;
-import eiu.edu.vn.Models.PrivateGroup;
-import eiu.edu.vn.Models.PublicGroup;
-import eiu.edu.vn.Models.User;
+import eiu.edu.vn.Models.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
@@ -36,32 +38,76 @@ public class UserController {
         return new String(index);
     }
 
-    public boolean createGroup(User owner, String nGroup, String userName, boolean isPrivate) {
+    public void createGroup(User owner, String nGroup, String userName, boolean isPrivate) {
+        ArrayList<Message> lstMessage = new ArrayList<Message>();
         if (isPrivate == false) {
-            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, userName, getCode());
+            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, userName, lstMessage, getCode());
             owner.addGroup(pubGroup);
-
         } else {
-            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, userName);
+            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, userName, lstMessage);
             owner.addGroup(priGroup);
         }
-        return isPrivate;
     }
 
-    public User inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
+    public void inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
         User u = lstFriend.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
         if (u != null) {
             group.addMember(u);
         }
-        return u;
     }
 
     public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
-        boolean result = false;
         if (pubGroup.getCode().equals(code)) {
             pubGroup.addMember(user);
-            result = true;
+            return true;
         }
-        return result;
+        return false;
     }
+
+    public void sendMessageToUser(Message message, User user) throws IOException {
+        File file = new File(message.getText());
+        if (file.isFile()) {
+            Path result = Files.move(Paths.get(message.getText()), Paths.get(user.getPath()));
+            if (result != null) {
+                System.out.println("Ok");
+            }
+        }
+        user.receiveMessage(message);
+    }
+
+    public void sendMessageToGroup(Message message, Group group) throws IOException {
+        File file = new File(message.getText());
+        if (file.isFile()) {
+            Path result = Files.move(Paths.get(message.getText()), Paths.get(group.getPath()));
+            if (result != null) {
+                System.out.println("Ok");
+            }
+        }
+        group.receiveMessage(message);
+    }
+
+    public void delMessageinUser(Message message, User user) throws IOException {
+        File file = new File(message.getText());
+        if (file.isFile()) {
+            boolean rs = Files.deleteIfExists(Paths.get(message.getText()));
+            if (rs == true) {
+                System.out.println("Ok");
+            }
+        }
+        user.removeMessage(message);
+    }
+
+    public void delMessageinGroup(Message message, Group group) throws IOException {
+        File file = new File(message.getText());
+        if (file.isFile()) {
+            boolean rs = Files.deleteIfExists(Paths.get(message.getText()));
+            if (rs == true) {
+                System.out.println("Ok");
+            }
+        } else {
+            group.removeMessage(message);
+        }
+    }
+
+
 }
