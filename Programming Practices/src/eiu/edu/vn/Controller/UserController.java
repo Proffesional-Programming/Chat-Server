@@ -36,26 +36,32 @@ public class UserController {
         return new String(index);
     }
 
-    public void createGroup(User owner, String nGroup, String userName, boolean isPrivate) {
+    public boolean createGroup(User owner, String nGroup, String userName, boolean isPrivate) {
         if (isPrivate == false) {
             PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, userName, getCode());
             owner.addGroup(pubGroup);
+
         } else {
             PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, userName);
             owner.addGroup(priGroup);
         }
+        return isPrivate;
     }
 
-    public void inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
+    public User inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
         User u = lstFriend.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
         if (u != null) {
             group.addMember(u);
         }
+        return u;
     }
 
-    public void joinGroup(String code, User user, PublicGroup pubGroup) {
+    public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
+        boolean result = false;
         if (pubGroup.getCode().equals(code)) {
             pubGroup.addMember(user);
+            result = true;
         }
+        return result;
     }
 }

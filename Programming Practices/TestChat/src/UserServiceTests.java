@@ -8,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class UserServiceTests {
     UserService userService = new UserService();
-
     public UserServiceTests() throws NoSuchAlgorithmException {
     }
 
@@ -18,4 +17,12 @@ public class UserServiceTests {
         boolean test = this.userService.createUser("nam", "123");
         Assert.assertTrue(test);
     }
+
+    @Test
+    public void CreatUsers() throws NoSuchAlgorithmException {
+        this.userService.createUser("bao", "123");
+        boolean test = this.userService.createUser("nam", "123");
+        Assert.assertTrue(test);
+    }
+
 }

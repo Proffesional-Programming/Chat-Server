@@ -1,8 +1,10 @@
 package eiu.edu.vn.Models;
 
 import eiu.edu.vn.Controller.UserController;
+import eiu.edu.vn.DataStore.DataStore;
 import eiu.edu.vn.Services.UserService;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ public class User {
     private String fullName;
     private ArrayList<Group> groups = new ArrayList<Group>();
     public UserController userController;
+    private DataStore store;
 
     public User(UUID id, String userName, String hashPassword) {
         this.id = id;
