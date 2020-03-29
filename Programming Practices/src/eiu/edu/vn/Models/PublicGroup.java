@@ -6,8 +6,8 @@ import java.util.UUID;
 public class PublicGroup extends Group {
     private String code;
 
-    public PublicGroup(UUID id, String nameGroup, String ownerUser, ArrayList<Message> lstMessage, String code) {
-        super(id, nameGroup, ownerUser, lstMessage);
+    public PublicGroup(UUID id, String nameGroup, String ownerUser, ArrayList<Message> messages, String code) {
+        super(id, nameGroup, ownerUser, messages);
         this.code = code;
     }
 

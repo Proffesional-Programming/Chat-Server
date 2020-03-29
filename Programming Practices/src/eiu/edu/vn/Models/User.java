@@ -1,45 +1,92 @@
 package eiu.edu.vn.Models;
 
-import eiu.edu.vn.Controller.UserController;
-import eiu.edu.vn.Services.UserService;
+import eiu.edu.vn.DataStore.DataStore;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.UUID;
 
-public class User extends Text {
+
+public class User extends Notification {
     private UUID id;
+    DataStore data = new DataStore();
     private String userName;
     private String password;
     private String lastName;
     private String firstName;
     private String hashPassword;
-    private ArrayList<Message> lstMessage = new ArrayList<Message>();
     private String fullName;
-    private ArrayList<Group> groups = new ArrayList<Group>();
-    private UserController userController;
     private String path = "./eiu/edu/vn/DataStore/";
+    private ArrayList<Group> groups;
 
-    public User(UUID id, String userName, String hashPassword, ArrayList<Message> lstMessage) {
-        super(lstMessage);
+    public User(UUID id, String userName, String hashPassword, ArrayList<Box> boxes) {
+        super(boxes);
         this.id = id;
         this.userName = userName;
         this.hashPassword = hashPassword;
-        this.userController = new UserController();
+        this.groups = new ArrayList<Group>();
         this.path += id;
         crtFolder(this.path);
     }
 
-    public User(UUID id, String userName, String password, String hashPassword, String fullName, ArrayList<Message> lstMessage) {
-        super(lstMessage);
+    public User(UUID id, String userName, String password, String hashPassword, String fullName, ArrayList<Box> boxes) {
+        super(boxes);
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.hashPassword = hashPassword;
+        this.groups = new ArrayList<Group>();
         this.fullName = fullName;
-        this.userController = new UserController();
         this.path += id;
         crtFolder(this.path);
+    }
+
+    public User findFriend(String userName) {
+        User user = data.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null);
+        return user;
+    }
+
+    public String getCode() {
+        char data[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+                'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
+                'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+                'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+                'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6',
+                '7', '8', '9'};
+        char index[] = new char[7];
+        Random r = new Random();
+        int i = 0;
+        for (i = 0; i < (index.length); i++) {
+            int ran = r.nextInt(data.length);
+            index[i] = data[ran];
+        }
+        return new String(index);
+    }
+
+    public void createGroup(String owner, String nGroup, boolean isPrivate) {
+        if (isPrivate == false) {
+            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new ArrayList<Message>(), getCode());
+            groups.add(pubGroup);
+        } else {
+            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new ArrayList<Message>());
+            groups.add(priGroup);
+        }
+    }
+
+    public void inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
+        User u = lstFriend.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
+        if (u != null) {
+            group.addMember(u);
+        }
+    }
+
+    public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
+        if (pubGroup.getCode().equals(code)) {
+            pubGroup.addMember(user);
+            return true;
+        }
+        return false;
     }
 
     public String getPath() {
@@ -52,8 +99,44 @@ public class User extends Text {
         return check;
     }
 
-    public void addGroup(Group group) {
-        groups.add(group);
+    public void receiveMessage(String message, String owner) {
+        Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
+        if (box != null) {
+            box.getMessages().add(new Message(owner, message));
+            getBoxes().remove(box);
+            getBoxes().add(box);
+        } else {
+            Box newBox = new Box(owner, new ArrayList<Message>());
+            newBox.getMessages().add(new Message(owner, message));
+            getBoxes().add(newBox);
+        }
+    }
+
+    public void sendMessage(String message, String owner) {
+        User user = data.lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
+        if (user != null) {
+            user.receiveMessage(message, getUserName());
+        }
+    }
+
+    public ArrayList<Message> getTopLastestMessage(int k, String owner) {
+        Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
+        ArrayList<Message> lstMessages = new ArrayList<Message>();
+        if (box != null) {
+            for (int i = box.getMessages().size() - 1 - k; i < box.getMessages().size(); i++) {
+                lstMessages.add(box.getMessages().get(i));
+            }
+        }
+        return lstMessages;
+    }
+
+    public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner) {
+        ArrayList<Message> lstMessages = new ArrayList<Message>();
+        Group group = groups.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+        if (group != null) {
+            lstMessages = group.getTopLastestMessage(k);
+        }
+        return lstMessages;
     }
 
     public UUID getId() {

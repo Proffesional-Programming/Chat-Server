@@ -1,6 +1,4 @@
-import eiu.edu.vn.Controller.UserController;
 import eiu.edu.vn.DataStore.DataStore;
-import eiu.edu.vn.Models.Group;
 import eiu.edu.vn.Models.Message;
 import eiu.edu.vn.Models.PublicGroup;
 import eiu.edu.vn.Models.User;

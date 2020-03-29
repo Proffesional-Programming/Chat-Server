@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Group extends Text {
+public class Group extends Notification {
     public DataStore dataStore;
     private String nameGroup;
     private ArrayList<User> groupMembers;
@@ -16,8 +16,8 @@ public class Group extends Text {
     private UUID id;
     private String path = "./eiu/edu/vn/DataStore/";
 
-    public Group(UUID id, String nameGroup, String ownerUser, ArrayList<Message> lstMessage) {
-        super(lstMessage);
+    public Group(UUID id, String nameGroup, String ownerUser, Box box) {
+        super(box);
         this.id = id;
         this.nameGroup = nameGroup;
         this.groupMembers = new ArrayList<User>();
@@ -31,6 +31,10 @@ public class Group extends Text {
         File file = new File(path);
         boolean check = file.mkdir();
         return check;
+    }
+
+    public ArrayList<User> getGroupMembers() {
+        return groupMembers;
     }
 
     public String getPath() {
@@ -61,4 +65,11 @@ public class Group extends Text {
         groupMembers.add(user);
     }
 
+    public ArrayList<Message> getTopLastestMessage(int k) {
+        ArrayList<Message> lstMessages = new ArrayList<Message>();
+        for (int i = getBox().getMessages().size() - k; i < getBox().getMessages().size(); i++) {
+            lstMessages.add(getBox().getMessages().get(i));
+        }
+        return lstMessages;
+    }
 }

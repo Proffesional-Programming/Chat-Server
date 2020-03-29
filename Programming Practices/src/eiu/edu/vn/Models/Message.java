@@ -1,21 +1,13 @@
 package eiu.edu.vn.Models;
 
-import java.awt.*;
+import java.util.ArrayList;
 
 public class Message {
-    private String text;
-    private String owner;
+    private String sender;
+    private String message;
 
-    public Message(String text, String owner, File file) {
-        this.text = text;
-        this.owner = owner;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public String getOwner() {
-        return owner;
+    public Message(String sender, String message) {
+        this.sender = sender;
+        this.message = message;
     }
 }
