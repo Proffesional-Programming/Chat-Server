@@ -18,14 +18,16 @@ public class User extends Notification {
     private String hashPassword;
     private String fullName;
     private String path = "./eiu/edu/vn/DataStore/";
-    private ArrayList<Group> groups;
+    private ArrayList<PrivateGroup> priGroups;
+    private ArrayList<PublicGroup> pubGroups;
 
     public User(UUID id, String userName, String hashPassword, ArrayList<Box> boxes) {
         super(boxes);
         this.id = id;
         this.userName = userName;
         this.hashPassword = hashPassword;
-        this.groups = new ArrayList<Group>();
+        this.priGroups = new ArrayList<PrivateGroup>();
+        this.pubGroups = new ArrayList<PublicGroup>();
         this.path += id;
         crtFolder(this.path);
     }
@@ -36,7 +38,8 @@ public class User extends Notification {
         this.userName = userName;
         this.password = password;
         this.hashPassword = hashPassword;
-        this.groups = new ArrayList<Group>();
+        this.priGroups = new ArrayList<PrivateGroup>();
+        this.pubGroups = new ArrayList<PublicGroup>();
         this.fullName = fullName;
         this.path += id;
         crtFolder(this.path);
@@ -46,6 +49,15 @@ public class User extends Notification {
         User user = data.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null);
         return user;
     }
+
+    public ArrayList<PrivateGroup> getPriGroups() {
+        return priGroups;
+    }
+
+    public ArrayList<PublicGroup> getPubGroups() {
+        return pubGroups;
+    }
+
 
     public String getCode() {
         char data[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
@@ -66,27 +78,33 @@ public class User extends Notification {
 
     public void createGroup(String owner, String nGroup, boolean isPrivate) {
         if (isPrivate == false) {
-            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new ArrayList<Message>(), getCode());
-            groups.add(pubGroup);
+            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(), getCode());
+            pubGroups.add(pubGroup);
+            data.lstPubGroup.add(pubGroup);
         } else {
-            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new ArrayList<Message>());
-            groups.add(priGroup);
+            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box());
+            priGroups.add(priGroup);
+            data.lstPriGroup.add(priGroup);
         }
     }
 
-    public void inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
+    public boolean inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
         User u = lstFriend.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
         if (u != null) {
             group.addMember(u);
+            return false;
         }
+        return true;
     }
 
     public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
         if (pubGroup.getCode().equals(code)) {
             pubGroup.addMember(user);
+            user.pubGroups.add(pubGroup);
             return true;
+        }else {
+            return false;
         }
-        return false;
     }
 
     public String getPath() {
@@ -130,13 +148,23 @@ public class User extends Notification {
         return lstMessages;
     }
 
-    public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner) {
-        ArrayList<Message> lstMessages = new ArrayList<Message>();
-        Group group = groups.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
-        if (group != null) {
-            lstMessages = group.getTopLastestMessage(k);
+    public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner,boolean checkGroup) {
+        if(checkGroup==true){ //true == public
+            ArrayList<Message> lstMessages = new ArrayList<Message>();
+            Group group = pubGroups.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            if (group != null) {
+                lstMessages = group.getTopLastestMessage(k);
+            }
+            return lstMessages;
+        }else {
+            ArrayList<Message> lstMessages = new ArrayList<Message>();
+            Group group = priGroups.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            if (group != null) {
+                lstMessages = group.getTopLastestMessage(k);
+            }
+            return lstMessages;
         }
-        return lstMessages;
+
     }
 
     public UUID getId() {

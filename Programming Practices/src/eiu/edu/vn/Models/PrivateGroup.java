@@ -5,8 +5,7 @@ import java.util.UUID;
 
 public class PrivateGroup extends Group {
 
-    public PrivateGroup(UUID id, String nameGroup, String ownerUser, ArrayList<Message> messages) {
-        super(id, nameGroup, ownerUser, messages);
+    public PrivateGroup(UUID id, String nameGroup, String ownerUser, Box box) {
+        super(id, nameGroup, ownerUser, box);
     }
-
 }

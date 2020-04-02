@@ -11,7 +11,6 @@ import java.util.UUID;
 
 
 public class UserControllerTests {
-    UserController userController = new UserController();
     DataStore dataStore = new DataStore();
 
     public UserControllerTests() throws NoSuchAlgorithmException {
@@ -32,12 +31,12 @@ public class UserControllerTests {
 //        boolean test = this.userController.inviteFriend("bao",new Group(UUID.randomUUID(),"Group1","bao"));
 //        Assert.assertTrue(test);
 //    }
-
-    @Test void joinGroup() throws  NoSuchAlgorithmException {
-        ArrayList<Message> messages = new ArrayList<Message>();
-        this.userController.joinGroup("123", new User(UUID.randomUUID(), "bao", "admin", messages), new PublicGroup(UUID.randomUUID(), "Group1", "bao", messages, "123"));
-        boolean test = this.userController.joinGroup("123", new User(UUID.randomUUID(), "bao", "admin", messages), new PublicGroup(UUID.randomUUID(), "Group1", "bao", messages, "123"));
-        Assert.assertTrue(test);
-    }
+//
+//    @Test void joinGroup() throws  NoSuchAlgorithmException {
+//        ArrayList<Message> messages = new ArrayList<Message>();
+//        this.userController.joinGroup("123", new User(UUID.randomUUID(), "bao", "admin", messages), new PublicGroup(UUID.randomUUID(), "Group1", "bao", messages, "123"));
+//        boolean test = this.userController.joinGroup("123", new User(UUID.randomUUID(), "bao", "admin", messages), new PublicGroup(UUID.randomUUID(), "Group1", "bao", messages, "123"));
+//        Assert.assertTrue(test);
+//    }
 
 }

@@ -1,6 +1,7 @@
 package eiu.edu.vn.Services;
 
 import eiu.edu.vn.DataStore.DataStore;
+import eiu.edu.vn.Models.Box;
 import eiu.edu.vn.Models.Message;
 import eiu.edu.vn.Models.PrivateGroup;
 import eiu.edu.vn.Models.User;
@@ -17,7 +18,7 @@ public class UserService {
 
     public UserService() throws NoSuchAlgorithmException {
         this.store = new DataStore();
-        createUser("admin", "admin");
+
     }
 
     public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
@@ -36,7 +37,7 @@ public class UserService {
 
     public User Login(String userName, String password) throws NoSuchAlgorithmException {
         String hashdedPassword = toHashPassword(getSHA(password));
-        User findUser = store.lstUser.stream().filter(user -> userName.equals(user.getUserName()) && hashdedPassword.equals(user.getPassword()))
+        User findUser = store.lstUser.stream().filter(user -> userName.equals(user.getUserName()) && hashdedPassword.equals(user.getHashPassword()))
                 .findAny()
                 .orElse(null);
         return findUser;
@@ -44,7 +45,7 @@ public class UserService {
 
     public boolean createUser(String userName, String password) throws NoSuchAlgorithmException {
         String hash = toHashPassword(getSHA(password));
-        ArrayList<Message> lstMessage = new ArrayList<Message>();
+        ArrayList<Box> lstMessage = new ArrayList<Box>();
         boolean result = false;
         User user = new User(UUID.randomUUID(), userName, hash, lstMessage);
         if (store.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null) == null) {
