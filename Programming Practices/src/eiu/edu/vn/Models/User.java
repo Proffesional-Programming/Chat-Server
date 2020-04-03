@@ -78,11 +78,11 @@ public class User extends Notification {
 
     public void createGroup(String owner, String nGroup, boolean isPrivate) {
         if (isPrivate == false) {
-            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(), getCode());
+            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()), getCode());
             pubGroups.add(pubGroup);
             data.lstPubGroup.add(pubGroup);
         } else {
-            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box());
+            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()));
             priGroups.add(priGroup);
             data.lstPriGroup.add(priGroup);
         }
@@ -91,10 +91,11 @@ public class User extends Notification {
     public boolean inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
         User u = lstFriend.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
         if (u != null) {
+
             group.addMember(u);
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
@@ -130,6 +131,10 @@ public class User extends Notification {
         }
     }
 
+    public void sendMessageinGroup(String message, Group group) {
+        group.receiveMessage(message, getUserName());
+    }
+
     public void sendMessage(String message, String owner) {
         User user = data.lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
         if (user != null) {
@@ -137,11 +142,25 @@ public class User extends Notification {
         }
     }
 
-    public ArrayList<Message> getTopLastestMessage(int k, String owner) {
+    public ArrayList<Message> getTopLastestMessageinK(int k, int m, String owner) {
+        Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
+        ArrayList<Message> messagesinM = getTopLastestMessageinM(m, owner);
+        ArrayList<Message> all = box.getMessages();
+        for (Message i : messagesinM) {
+            all.remove(i);
+        }
+        ArrayList<Message> lstMessages = new ArrayList<Message>();
+        for (int i = all.size() - 1 - k; i < all.size(); i++) {
+            lstMessages.add(box.getMessages().get(i));
+        }
+        return lstMessages;
+    }
+
+    public ArrayList<Message> getTopLastestMessageinM(int m, String owner) {
         Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
         ArrayList<Message> lstMessages = new ArrayList<Message>();
         if (box != null) {
-            for (int i = box.getMessages().size() - 1 - k; i < box.getMessages().size(); i++) {
+            for (int i = box.getMessages().size() - 1 - m; i < box.getMessages().size(); i++) {
                 lstMessages.add(box.getMessages().get(i));
             }
         }

@@ -15,6 +15,7 @@ public class Group extends Notification {
     private String ownerUser;
     private UUID id;
     private String path = "./eiu/edu/vn/DataStore/";
+    private String[] pathFile;
 
     public Group(UUID id, String nameGroup, String ownerUser, Box box) {
         super(box);
@@ -27,10 +28,29 @@ public class Group extends Notification {
         crtFolder(this.path);
     }
 
+    public void receiveMessage(String message, String user) {
+        User u = groupMembers.stream().filter(x -> x.getUserName().equals(user)).findAny().orElse(null);
+        if (u != null) {
+            box.getMessages().add(new Message(u.getUserName(), message));
+        }
+
+    }
+
     private boolean crtFolder(String path) {
         File file = new File(path);
         boolean check = file.mkdir();
         return check;
+    }
+
+    public ArrayList<String> listFiles(String path) {
+        File file = new File(path);
+        ArrayList<String> list = new ArrayList<String>();
+        pathFile = file.list();
+        for (String s : pathFile) {
+            s = path + s;
+            list.add(s);
+        }
+        return list;
     }
 
     public ArrayList<User> getGroupMembers() {
@@ -66,6 +86,9 @@ public class Group extends Notification {
     }
 
     public ArrayList<Message> getTopLastestMessage(int k) {
+        if (getBox().getMessages().size() <= k) {
+            return getBox().getMessages();
+        }
         ArrayList<Message> lstMessages = new ArrayList<Message>();
         for (int i = getBox().getMessages().size() - k; i < getBox().getMessages().size(); i++) {
             lstMessages.add(getBox().getMessages().get(i));

@@ -54,9 +54,15 @@ public class UserServiceTests {
     @Test
     public void inviteFriend() throws NoSuchAlgorithmException {
         generateUser();
-        User user=userService.Login("nam","123");
-        boolean test = user.inviteFriend("nam",dataStore.lstUser,user.getPubGroups().stream().filter(x->x.getNameGroup().equals("Hello")).findAny()
-                .orElse(null));
+        boolean test = false;
+        User user = userService.Login("nam", "123");
+        PublicGroup pubGroup = user.getPubGroups().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        PrivateGroup priGroup = user.getPriGroups().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        if (pubGroup != null) {
+            test = user.inviteFriend("nam", dataStore.lstUser, pubGroup);
+        } else {
+            test = user.inviteFriend("nam", dataStore.lstUser, priGroup);
+        }
         Assert.assertTrue(test);
 
     }
