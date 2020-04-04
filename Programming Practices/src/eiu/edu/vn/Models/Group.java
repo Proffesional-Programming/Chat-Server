@@ -4,6 +4,7 @@ package eiu.edu.vn.Models;
 import eiu.edu.vn.DataStore.DataStore;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,10 @@ public class Group extends Notification {
             box.getMessages().add(new Message(u.getUserName(), message));
         }
 
+    }
+
+    public ArrayList<Message> seeConversation() {
+        return getBox().getMessages();
     }
 
     private boolean crtFolder(String path) {

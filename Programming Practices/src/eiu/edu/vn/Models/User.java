@@ -18,16 +18,12 @@ public class User extends Notification {
     private String hashPassword;
     private String fullName;
     private String path = "./eiu/edu/vn/DataStore/";
-    private ArrayList<PrivateGroup> priGroups;
-    private ArrayList<PublicGroup> pubGroups;
 
     public User(UUID id, String userName, String hashPassword, ArrayList<Box> boxes) {
         super(boxes);
         this.id = id;
         this.userName = userName;
         this.hashPassword = hashPassword;
-        this.priGroups = new ArrayList<PrivateGroup>();
-        this.pubGroups = new ArrayList<PublicGroup>();
         this.path += id;
         crtFolder(this.path);
     }
@@ -38,8 +34,6 @@ public class User extends Notification {
         this.userName = userName;
         this.password = password;
         this.hashPassword = hashPassword;
-        this.priGroups = new ArrayList<PrivateGroup>();
-        this.pubGroups = new ArrayList<PublicGroup>();
         this.fullName = fullName;
         this.path += id;
         crtFolder(this.path);
@@ -49,15 +43,6 @@ public class User extends Notification {
         User user = data.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null);
         return user;
     }
-
-    public ArrayList<PrivateGroup> getPriGroups() {
-        return priGroups;
-    }
-
-    public ArrayList<PublicGroup> getPubGroups() {
-        return pubGroups;
-    }
-
 
     public String getCode() {
         char data[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
@@ -79,11 +64,9 @@ public class User extends Notification {
     public void createGroup(String owner, String nGroup, boolean isPrivate) {
         if (isPrivate == false) {
             PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()), getCode());
-            pubGroups.add(pubGroup);
             data.lstPubGroup.add(pubGroup);
         } else {
             PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()));
-            priGroups.add(priGroup);
             data.lstPriGroup.add(priGroup);
         }
     }
@@ -100,8 +83,9 @@ public class User extends Notification {
 
     public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
         if (pubGroup.getCode().equals(code)) {
+            data.lstPubGroup.remove(pubGroup);
             pubGroup.addMember(user);
-            user.pubGroups.add(pubGroup);
+            data.lstPubGroup.add(pubGroup);
             return true;
         }else {
             return false;
@@ -131,6 +115,14 @@ public class User extends Notification {
         }
     }
 
+    public ArrayList<Message> seeConversation(String owner) {
+        Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
+        if (box != null) {
+            return box.getMessages();
+        }
+        return new ArrayList<Message>();
+    }
+
     public void sendMessageinGroup(String message, Group group) {
         group.receiveMessage(message, getUserName());
     }
@@ -139,6 +131,20 @@ public class User extends Notification {
         User user = data.lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
         if (user != null) {
             user.receiveMessage(message, getUserName());
+        }
+    }
+
+    public void leaveGroup(String nameGroup, boolean isPrivate) {
+        if (isPrivate == true) {
+            PrivateGroup pri = data.lstPriGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            pri.getGroupMembers().remove(pri.getGroupMembers().stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null));
+            data.lstPriGroup.remove(pri);
+            data.lstPriGroup.add(pri);
+        } else {
+            PublicGroup pub = data.lstPubGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            pub.getGroupMembers().remove(pub.getGroupMembers().stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null));
+            data.lstPubGroup.remove(pub);
+            data.lstPubGroup.add(pub);
         }
     }
 
@@ -170,14 +176,14 @@ public class User extends Notification {
     public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner,boolean checkGroup) {
         if(checkGroup==true){ //true == public
             ArrayList<Message> lstMessages = new ArrayList<Message>();
-            Group group = pubGroups.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            Group group = data.lstPubGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
             if (group != null) {
                 lstMessages = group.getTopLastestMessage(k);
             }
             return lstMessages;
         }else {
             ArrayList<Message> lstMessages = new ArrayList<Message>();
-            Group group = priGroups.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            Group group = data.lstPriGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
             if (group != null) {
                 lstMessages = group.getTopLastestMessage(k);
             }
