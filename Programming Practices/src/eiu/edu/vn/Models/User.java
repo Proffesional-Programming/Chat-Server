@@ -173,15 +173,49 @@ public class User extends Notification {
         return lstMessages;
     }
 
-    public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner,boolean checkGroup) {
-        if(checkGroup==true){ //true == public
+    public void removeMessageInUser(String message, String owner) {
+        Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
+        if (box != null) {
+            Message message1 = box.getMessages().stream().filter(x -> x.getMessage().equals(message)).findAny().orElse(null);
+            if (message1 != null) {
+                box.getMessages().remove(message1);
+            }
+
+            File file = new File(path + message);
+            if (file.isFile()) {
+                file.delete();
+            }
+            getBoxes().remove(box);
+            getBoxes().add(box);
+        }
+
+        User user = data.lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
+        user.removeMessageInUser(message, getUserName());
+    }
+
+    public void removeMessageInGroup(String message, String nameGroup, boolean isPrivate) {
+        if (isPrivate == true) {
+            PrivateGroup pri = data.lstPriGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            if (pri != null) {
+                pri.delMessage(message, getUserName());
+            }
+        } else {
+            PublicGroup pub = data.lstPubGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            if (pub != null) {
+                pub.delMessage(message, getUserName());
+            }
+        }
+    }
+
+    public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner, boolean checkGroup) {
+        if (checkGroup == true) { //true == public
             ArrayList<Message> lstMessages = new ArrayList<Message>();
             Group group = data.lstPubGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
             if (group != null) {
                 lstMessages = group.getTopLastestMessage(k);
             }
             return lstMessages;
-        }else {
+        } else {
             ArrayList<Message> lstMessages = new ArrayList<Message>();
             Group group = data.lstPriGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
             if (group != null) {
