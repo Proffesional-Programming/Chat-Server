@@ -11,6 +11,7 @@ import java.util.UUID;
 public class User extends Notification {
     private UUID id;
     DataStore data = new DataStore();
+
     private String userName;
     private String password;
     private String lastName;
@@ -18,6 +19,10 @@ public class User extends Notification {
     private String hashPassword;
     private String fullName;
     private String path = "./eiu/edu/vn/DataStore/";
+
+    public DataStore getData() {
+        return data;
+    }
 
     public User(UUID id, String userName, String hashPassword, ArrayList<Box> boxes) {
         super(boxes);
@@ -102,16 +107,19 @@ public class User extends Notification {
         return check;
     }
 
-    public void receiveMessage(String message, String owner) {
+    public boolean receiveMessage(String message, String owner) {
         Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
+        boolean check = false;
         if (box != null) {
             box.getMessages().add(new Message(owner, message));
             getBoxes().remove(box);
             getBoxes().add(box);
+            return check=false;
         } else {
             Box newBox = new Box(owner, new ArrayList<Message>());
             newBox.getMessages().add(new Message(owner, message));
             getBoxes().add(newBox);
+            return check=true;
         }
     }
 
@@ -131,6 +139,7 @@ public class User extends Notification {
         User user = data.lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
         if (user != null) {
             user.receiveMessage(message, getUserName());
+
         }
     }
 

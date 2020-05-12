@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Box {
     private String owner;
+
     private ArrayList<Message> messages = new ArrayList<Message>();
 
     public Box(String owner, ArrayList<Message> messages) {

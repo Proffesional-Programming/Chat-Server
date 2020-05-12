@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+
 public class UserServiceTests {
     UserService userService = new UserService();
     DataStore dataStore = new DataStore();
@@ -43,7 +45,7 @@ public class UserServiceTests {
         User user=userService.Login("nam","123");
         user.createGroup(user.getUserName(),"Hello",true);
         user.createGroup(user.getUserName(),"Hero",false);
-        boolean test=user.getPriGroups().stream().filter(x->x.getNameGroup().equals("Hello")).findAny().isEmpty();
+        boolean test=user.getData().lstPriGroup.stream().filter(x->x.getNameGroup().equals("Hello")).findAny().isEmpty();
         Assert.assertFalse(test);
     }
 
@@ -56,8 +58,8 @@ public class UserServiceTests {
         generateUser();
         boolean test = false;
         User user = userService.Login("nam", "123");
-        PublicGroup pubGroup = user.getPubGroups().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
-        PrivateGroup priGroup = user.getPriGroups().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        PublicGroup pubGroup = user.getData().lstPubGroup.stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        PrivateGroup priGroup = user.getData().lstPriGroup.stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
         if (pubGroup != null) {
             test = user.inviteFriend("nam", dataStore.lstUser, pubGroup);
         } else {
@@ -73,11 +75,77 @@ public class UserServiceTests {
         PublicGroup publicGroup = dataStore.lstPubGroup.stream().filter(x->x.getNameGroup().equals("Hello")).findAny().orElse(null);
         User user = userService.Login("bao","123");
         user.joinGroup("abc",user,publicGroup);
-        boolean test = user.joinGroup("abc",user,user.getPubGroups().stream().filter(x->x.getNameGroup().equals("bao")).findAny().orElse(null));
+        boolean test = user.joinGroup("abc",user,user.getData().lstPubGroup.stream().filter(x->x.getNameGroup().equals("bao")).findAny().orElse(null));
+        Assert.assertTrue(test);
+    }
+
+    @Test
+    public void crtFolder() throws NoSuchAlgorithmException{
+        generateUser();
+        User user = userService.Login("bao","123");
+        String test = user.getPath();
+        assertEquals(true,test);
+    }
+
+
+    @Test
+    public void receiveMessage() throws NoSuchAlgorithmException{
+        generateUser();
+        boolean test =false;
+        User user = userService.Login("bao","123");
+        Box box = user.getBoxes().stream().filter(x ->x.getOwner().equals("bao")).findAny().orElse(null);
+        if (box !=null){
+            test = true;
+        }else {
+            test=false;
+        }
+        Assert.assertFalse(test);
+    }
+
+    @Test
+    public void seeConversation() throws NoSuchAlgorithmException{
+        generateUser();
+        boolean test =false;
+        User user = userService.Login("bao","123");
+        Box box = user.getBoxes().stream().filter(x ->x.getMessages().equals("123")).findAny().orElse(null);
+        if (box !=null){
+            test = true;
+        }else {
+            test=false;
+        }
+        Assert.assertFalse(test);
+    }
+
+    @Test
+    public void sendMessage() throws NoSuchAlgorithmException{
+        generateUser();
+        boolean test = true;
+        User user = userService.Login("nam","123");
+        user.sendMessage("abc","bao");
+        User user1 = userService.Login("bao","123");
+        ArrayList<Message>message=user1.getTopLastestMessageinM(1,"nam");
+        if(!message.get(message.size()-1).getMessage().equals("abc")){
+             test =false;
+        }
+        Assert.assertTrue(test);
+    }
+
+    @Test
+    public void removeMessageInUser() throws NoSuchAlgorithmException{
+        generateUser();
+        boolean test = true;
+        User user = userService.Login("nam","123");
+        user.sendMessage("abc","bao");
+        user.removeMessageInUser("abc","bao");
+        ArrayList<Message> message = user.getTopLastestMessageinM(1,"nam");
+        if(message != null){
+            test = false;
+        }
         Assert.assertTrue(test);
 
-
     }
+
+
 
 
 
