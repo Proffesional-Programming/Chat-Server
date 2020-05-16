@@ -58,6 +58,10 @@ public class Group extends Notification {
         return list;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public ArrayList<User> getGroupMembers() {
         return groupMembers;
     }

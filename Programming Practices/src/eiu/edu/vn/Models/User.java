@@ -10,8 +10,6 @@ import java.util.UUID;
 
 public class User extends Notification {
     private UUID id;
-    DataStore data = new DataStore();
-
     private String userName;
     private String password;
     private String lastName;
@@ -19,10 +17,6 @@ public class User extends Notification {
     private String hashPassword;
     private String fullName;
     private String path = "./eiu/edu/vn/DataStore/";
-
-    public DataStore getData() {
-        return data;
-    }
 
     public User(UUID id, String userName, String hashPassword, ArrayList<Box> boxes) {
         super(boxes);
@@ -33,54 +27,36 @@ public class User extends Notification {
         crtFolder(this.path);
     }
 
-    public User(UUID id, String userName, String password, String hashPassword, String fullName, ArrayList<Box> boxes) {
-        super(boxes);
-        this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.hashPassword = hashPassword;
-        this.fullName = fullName;
-        this.path += id;
-        crtFolder(this.path);
-    }
+
 
     public User findFriend(String userName) {
-        User user = data.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null);
+        User user = DataStore.getInstance().lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null);
         return user;
     }
 
     public String getCode() {
-        char data[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-                'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
-                'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-                'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-                'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6',
-                '7', '8', '9'};
-        char index[] = new char[7];
-        Random r = new Random();
-        int i = 0;
-        for (i = 0; i < (index.length); i++) {
-            int ran = r.nextInt(data.length);
-            index[i] = data[ran];
-        }
-        return new String(index);
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String fullalphabet = alphabet + alphabet.toLowerCase() + "123456789";
+        Random random = new Random();
+        char code = fullalphabet.charAt(random.nextInt(7));
+        return Character.toString(code);
     }
 
     public void createGroup(String owner, String nGroup, boolean isPrivate) {
         if (isPrivate == false) {
             PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()), getCode());
-            data.lstPubGroup.add(pubGroup);
+            DataStore.getInstance().lstPubGroup.add(pubGroup);
         } else {
             PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()));
-            data.lstPriGroup.add(priGroup);
+            DataStore.getInstance().lstPriGroup.add(priGroup);
         }
     }
 
-    public boolean inviteFriend(String user, ArrayList<User> lstFriend, Group group) {
-        User u = lstFriend.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
+    public boolean inviteFriend(String user, UUID gid) {
+        User u = DataStore.getInstance().lstUser.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
         if (u != null) {
-
-            group.addMember(u);
+            DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getId().equals(gid)).findAny().orElse(null).addMember(u);
+            DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getId().equals(gid)).findAny().orElse(null).addMember(u);
             return true;
         }
         return false;
@@ -88,9 +64,9 @@ public class User extends Notification {
 
     public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
         if (pubGroup.getCode().equals(code)) {
-            data.lstPubGroup.remove(pubGroup);
+            DataStore.getInstance().lstPubGroup.remove(pubGroup);
             pubGroup.addMember(user);
-            data.lstPubGroup.add(pubGroup);
+            DataStore.getInstance().lstPubGroup.add(pubGroup);
             return true;
         }else {
             return false;
@@ -135,8 +111,8 @@ public class User extends Notification {
         group.receiveMessage(message, getUserName());
     }
 
-    public void sendMessage(String message, String owner) {
-        User user = data.lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
+    public void sendMessage(String message, String receiver) {
+        User user = DataStore.getInstance().lstUser.stream().filter(x -> x.getUserName().equals(receiver)).findAny().orElse(null);
         if (user != null) {
             user.receiveMessage(message, getUserName());
 
@@ -145,15 +121,15 @@ public class User extends Notification {
 
     public void leaveGroup(String nameGroup, boolean isPrivate) {
         if (isPrivate == true) {
-            PrivateGroup pri = data.lstPriGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            PrivateGroup pri = DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
             pri.getGroupMembers().remove(pri.getGroupMembers().stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null));
-            data.lstPriGroup.remove(pri);
-            data.lstPriGroup.add(pri);
+            DataStore.getInstance().lstPriGroup.remove(pri);
+            DataStore.getInstance().lstPriGroup.add(pri);
         } else {
-            PublicGroup pub = data.lstPubGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            PublicGroup pub = DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
             pub.getGroupMembers().remove(pub.getGroupMembers().stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null));
-            data.lstPubGroup.remove(pub);
-            data.lstPubGroup.add(pub);
+            DataStore.getInstance().lstPubGroup.remove(pub);
+            DataStore.getInstance().lstPubGroup.add(pub);
         }
     }
 
@@ -198,18 +174,18 @@ public class User extends Notification {
             getBoxes().add(box);
         }
 
-        User user = data.lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
+        User user = DataStore.getInstance().lstUser.stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
         user.removeMessageInUser(message, getUserName());
     }
 
     public void removeMessageInGroup(String message, String nameGroup, boolean isPrivate) {
         if (isPrivate == true) {
-            PrivateGroup pri = data.lstPriGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            PrivateGroup pri = DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
             if (pri != null) {
                 pri.delMessage(message, getUserName());
             }
         } else {
-            PublicGroup pub = data.lstPubGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
+            PublicGroup pub = DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getNameGroup().equals(nameGroup)).findAny().orElse(null);
             if (pub != null) {
                 pub.delMessage(message, getUserName());
             }
@@ -219,14 +195,14 @@ public class User extends Notification {
     public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner, boolean checkGroup) {
         if (checkGroup == true) { //true == public
             ArrayList<Message> lstMessages = new ArrayList<Message>();
-            Group group = data.lstPubGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            Group group = DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
             if (group != null) {
                 lstMessages = group.getTopLastestMessage(k);
             }
             return lstMessages;
         } else {
             ArrayList<Message> lstMessages = new ArrayList<Message>();
-            Group group = data.lstPriGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            Group group = DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
             if (group != null) {
                 lstMessages = group.getTopLastestMessage(k);
             }
