@@ -52,13 +52,15 @@ public class User extends Notification {
         }
     }
 
-    public boolean inviteFriend(String user, UUID groupid, boolean isPrivate) {
+    public boolean inviteFriend(String user, UUID groupid) {
         User u = DataStore.getInstance().lstUser.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
+        PublicGroup pubGroup = DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getId().equals(groupid)).findAny().orElse(null);
+        PrivateGroup priGroup = DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getId().equals(groupid)).findAny().orElse(null);
         if (u != null) {
-            if (isPrivate == true) {
-                DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getId().equals(groupid)).findAny().orElse(null).addMember(u);
+            if (pubGroup.getId() == groupid) {
+                pubGroup.addMember(u);
             } else {
-                DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getId().equals(groupid)).findAny().orElse(null).addMember(u);
+                priGroup.addMember(u);
             }
             return true;
         }
