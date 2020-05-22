@@ -15,6 +15,11 @@ import java.util.UUID;
 
 public class UserService {
 
+    DataStore dataStore;
+
+    public UserService() {
+        this.dataStore = DataStore.getInstance();
+    }
 
     public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -32,7 +37,7 @@ public class UserService {
 
     public User Login(String userName, String password) throws NoSuchAlgorithmException {
         String hashdedPassword = toHashPassword(getSHA(password));
-        User findUser = DataStore.getInstance().lstUser.stream().filter(user -> userName.equals(user.getUserName()) && hashdedPassword.equals(user.getHashPassword()))
+        User findUser = dataStore.lstUser.stream().filter(user -> userName.equals(user.getUserName()) && hashdedPassword.equals(user.getHashPassword()))
                 .findAny()
                 .orElse(null);
         return findUser;
@@ -43,8 +48,8 @@ public class UserService {
         ArrayList<Box> lstMessage = new ArrayList<Box>();
         boolean result = false;
         User user = new User(UUID.randomUUID(), userName, hash, lstMessage);
-        if (DataStore.getInstance().lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null) == null) {
-            result = DataStore.getInstance().lstUser.add(user);
+        if (dataStore.lstUser.stream().filter(x -> x.getUserName().equals(userName)).findAny().orElse(null) == null) {
+            result = dataStore.lstUser.add(user);
         }
         return result;
     }
