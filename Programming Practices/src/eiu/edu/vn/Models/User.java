@@ -52,23 +52,27 @@ public class User extends Notification {
         }
     }
 
-    public boolean inviteFriend(String user, UUID gid) {
+    public boolean inviteFriend(String user, UUID groupid, boolean isPrivate) {
         User u = DataStore.getInstance().lstUser.stream().filter(x -> x.getUserName().equals(user)).findFirst().orElse(null);
         if (u != null) {
-            DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getId().equals(gid)).findAny().orElse(null).addMember(u);
-            DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getId().equals(gid)).findAny().orElse(null).addMember(u);
+            if (isPrivate == true) {
+                DataStore.getInstance().lstPriGroup.stream().filter(x -> x.getId().equals(groupid)).findAny().orElse(null).addMember(u);
+            } else {
+                DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getId().equals(groupid)).findAny().orElse(null).addMember(u);
+            }
             return true;
         }
         return false;
     }
 
-    public boolean joinGroup(String code, User user, PublicGroup pubGroup) {
+    public boolean joinGroup(String code, User user, UUID groupid) {
+        PublicGroup pubGroup = DataStore.getInstance().lstPubGroup.stream().filter(x -> x.getId().equals(groupid)).findFirst().orElse(null);
         if (pubGroup.getCode().equals(code)) {
             DataStore.getInstance().lstPubGroup.remove(pubGroup);
             pubGroup.addMember(user);
             DataStore.getInstance().lstPubGroup.add(pubGroup);
             return true;
-        }else {
+        } else {
             return false;
         }
     }

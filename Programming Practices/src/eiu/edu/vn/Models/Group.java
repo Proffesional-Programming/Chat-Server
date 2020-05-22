@@ -40,7 +40,6 @@ public class Group extends Notification {
     public ArrayList<Message> seeConversation() {
         return getBox().getMessages();
     }
-
     private boolean crtFolder(String path) {
         File file = new File(path);
         boolean check = file.mkdir();
