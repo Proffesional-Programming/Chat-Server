@@ -10,7 +10,6 @@ public class PublicGroup extends Group {
         super(id, nameGroup, ownerUser, box);
         this.code = code;
     }
-
     public String getCode() {
         return code;
     }

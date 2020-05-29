@@ -122,7 +122,7 @@ public class User extends Notification {
         User user = DataStore.getInstance().getLstUser().stream().filter(x -> x.getUserName().equals(receiver)).findAny().orElse(null);
         if (user != null) {
             user.receiveMessage(message, getUserName());
-
+            receiveMessage(message,user.getUserName());
         }
     }
 
@@ -147,20 +147,20 @@ public class User extends Notification {
         for (Message i : messagesinM) {
             all.remove(i);
         }
-        ArrayList<Message> lstMessages = new ArrayList<Message>();
-        for (int i = all.size() - 1 - k; i < all.size(); i++) {
-            lstMessages.add(box.getMessages().get(i));
-        }
-        return lstMessages;
+
+        return getTopLastestMessageinM(k,owner);
     }
 
     public ArrayList<Message> getTopLastestMessageinM(int m, String owner) {
         Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
         ArrayList<Message> lstMessages = new ArrayList<Message>();
         if (box != null) {
-            for (int i = box.getMessages().size() - 1 - m; i < box.getMessages().size(); i++) {
+            for (int i = box.getMessages().size() - 1; i >= 0; i--) {
                 lstMessages.add(box.getMessages().get(i));
+                m--;
+                if(m==0) break;
             }
+
         }
         return lstMessages;
     }
@@ -181,8 +181,7 @@ public class User extends Notification {
             getBoxes().add(box);
         }
 
-        User user = DataStore.getInstance().getLstUser().stream().filter(x -> x.getUserName().equals(owner)).findAny().orElse(null);
-        user.removeMessageInUser(message, getUserName());
+
     }
 
     public void removeMessageInGroup(String message, String nameGroup, boolean isPrivate) {
@@ -199,19 +198,24 @@ public class User extends Notification {
         }
     }
 
-    public ArrayList<Message> getTopLastestMessageinGroup(int k, String owner, boolean checkGroup) {
+    public ArrayList<Message> getTopLastestMessageinGroup(int k,UUID id ,boolean checkGroup) {
+        ArrayList<Message> lstMessages = new ArrayList<Message>();
         if (checkGroup == true) { //true == public
-            ArrayList<Message> lstMessages = new ArrayList<Message>();
-            Group group = DataStore.getInstance().getLstPubGroup().stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            PublicGroup group = DataStore.getInstance().getLstPubGroup().stream().filter(x -> x.getId().equals(id)).findAny().orElse(null);
             if (group != null) {
-                lstMessages = group.getTopLastestMessage(k);
+                User user=group.getGroupMembers().stream().filter(x->x.getUserName().equals(getUserName())).findAny().orElse(null);
+                if(user!=null){
+                    lstMessages = group.getTopLastestMessage(k);
+                }
             }
             return lstMessages;
         } else {
-            ArrayList<Message> lstMessages = new ArrayList<Message>();
-            Group group = DataStore.getInstance().getLstPriGroup().stream().filter(x -> x.getNameGroup().equals(owner)).findAny().orElse(null);
+            PrivateGroup group = DataStore.getInstance().getLstPriGroup().stream().filter(x -> x.getId().equals(id)).findAny().orElse(null);
             if (group != null) {
-                lstMessages = group.getTopLastestMessage(k);
+                User user=group.getGroupMembers().stream().filter(x->x.getUserName().equals(getUserName())).findAny().orElse(null);
+                if(user!=null){
+                    lstMessages = group.getTopLastestMessage(k);
+                }
             }
             return lstMessages;
         }

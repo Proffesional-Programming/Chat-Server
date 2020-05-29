@@ -49,10 +49,11 @@ public class UserServiceTests {
     @Test
     public void inviteFriend() throws NoSuchAlgorithmException {
         generateUser();
-        boolean test = false;
+        boolean test = true;
         User user = userService.Login("nam", "123");
-        user.createGroup(user.getUserName(), "Hello", true);
-        test = user.inviteFriend("nam", UUID.fromString(""));
+        user.createGroup(user.getUserName(), "Hello", false);
+        PublicGroup publicGroup = DataStore.getInstance().getLstPubGroup().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        test = user.inviteFriend("bao",publicGroup.getId());
         Assert.assertTrue(test);
     }
 
@@ -68,14 +69,6 @@ public class UserServiceTests {
         Assert.assertTrue(test);
     }
 
-    @Test
-    public void crtFolder() throws NoSuchAlgorithmException{
-        generateUser();
-        User user = userService.Login("bao","123");
-        String test = user.getPath();
-        assertEquals(true,test);
-    }
-
 
     @Test
     public void receiveMessage() throws NoSuchAlgorithmException{
@@ -88,6 +81,7 @@ public class UserServiceTests {
         }else {
             test=false;
         }
+
         Assert.assertFalse(test);
     }
 
@@ -102,6 +96,7 @@ public class UserServiceTests {
         }else {
             test=false;
         }
+
         Assert.assertFalse(test);
     }
 
@@ -116,9 +111,9 @@ public class UserServiceTests {
         if(!message.get(message.size()-1).getMessage().equals("abc")){
              test =false;
         }
+
         Assert.assertTrue(test);
     }
-
     @Test
     public void removeMessageInUser() throws NoSuchAlgorithmException{
         generateUser();
@@ -127,8 +122,8 @@ public class UserServiceTests {
         user.sendMessage("abc","bao");
         user.removeMessageInUser("abc","bao");
         ArrayList<Message> message = user.getTopLastestMessageinM(1,"nam");
-        if(message != null){
-            test = false;
+        if(message.size()!=0){
+            test=false;
         }
         Assert.assertTrue(test);
     }
@@ -147,6 +142,7 @@ public class UserServiceTests {
         user2.sendMessageinGroup("abc",publicGroup);
         user2.removeMessageInGroup("abc",publicGroup.getNameGroup(),false);
         ArrayList<Message> message = user2.getTopLastestMessageinM(1,user2.getUserName());
+
         if(message.size()!=0){
             test=false;
         }
@@ -157,7 +153,7 @@ public class UserServiceTests {
     @Test
     public void leaveGroup() throws NoSuchAlgorithmException{
         generateUser();
-//        boolean test = true;
+
         User user1 = userService.Login("bao", "123");
         User user2 = userService.Login("nam", "123");
         User user3 = userService.Login("bao1", "123");
@@ -168,7 +164,88 @@ public class UserServiceTests {
         user2.joinGroup(publicGroup.getCode(), user2, publicGroup.getId());
         user3.joinGroup(publicGroup.getCode(), user3, publicGroup.getId());
         user2.leaveGroup(publicGroup.getNameGroup(),false);
+
         Assert.assertEquals(1, publicGroup.getSize());
+    }
+
+    @Test
+    public void getTopLastestMessageinK() throws NoSuchAlgorithmException{
+        generateUser();
+
+        boolean test =true;
+        User user1 = userService.Login("bao", "123");
+        User user2 = userService.Login("nam", "123");
+
+        user1.sendMessage("abc1","nam");
+        user1.sendMessage("abc2","nam");
+        user1.sendMessage("abc3","nam");
+        user1.sendMessage("abc4","nam");
+        user1.sendMessage("abc5","nam");
+        user1.sendMessage("abc6","nam");
+        user1.sendMessage("abc7","nam");
+
+        ArrayList<Message> message = user1.getTopLastestMessageinK(4,2,user2.getUserName());
+
+        if(message.size()!=4){
+            test =false;
+        }
+        Assert.assertTrue(test);
+
+
+    }
+
+    @Test
+    public void getTopLastestMessageinM() throws NoSuchAlgorithmException{
+        generateUser();
+
+        boolean test =true;
+        User user1 = userService.Login("bao", "123");
+        User user2 = userService.Login("nam", "123");
+
+        user1.sendMessage("abc1","nam");
+        user1.sendMessage("abc2","nam");
+        user1.sendMessage("abc3","nam");
+        user1.sendMessage("abc4","nam");
+        user1.sendMessage("abc5","nam");
+        user1.sendMessage("abc6","nam");
+        user1.sendMessage("abc7","nam");
+
+        ArrayList<Message> message = user1.getTopLastestMessageinM(3,user2.getUserName());
+        if(message.size()!=3){
+            test =false;
+        }
+        Assert.assertTrue(test);
+    }
+
+
+
+    @Test
+    public void getTopLastestMessageinGroup() throws NoSuchAlgorithmException{
+        generateUser();
+
+        boolean test =true;
+        User user1 = userService.Login("bao", "123");
+        User user2 = userService.Login("nam", "123");
+
+        user2.createGroup(user1.getUserName(), "Hello", false);
+        PublicGroup publicGroup = DataStore.getInstance().getLstPubGroup().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        user1.joinGroup(publicGroup.getCode(), user1, publicGroup.getId());
+
+        user1.sendMessageinGroup("abc1",publicGroup);
+        user1.sendMessageinGroup("abc2",publicGroup);
+        user1.sendMessageinGroup("abc3",publicGroup);
+        user1.sendMessageinGroup("abc4",publicGroup);
+        user2.sendMessageinGroup("abc5",publicGroup);
+        user2.sendMessageinGroup("abc6",publicGroup);
+        user2.sendMessageinGroup("abc7",publicGroup);
+
+        ArrayList<Message> message = user1.getTopLastestMessageinGroup(4,publicGroup.getId(),true);
+
+        if(message.size()!=4){
+            test =false;
+        }
+        Assert.assertTrue(test);
+
     }
 
 
