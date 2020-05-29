@@ -20,9 +20,7 @@ public class UserServiceTests {
     public void generateUser() throws NoSuchAlgorithmException {
         userService.createUser("nam", "123");
         userService.createUser("bao", "123");
-    }
-
-    public UserServiceTests() throws NoSuchAlgorithmException {
+        userService.createUser("bao1", "123");
     }
 
     @Test
@@ -48,9 +46,6 @@ public class UserServiceTests {
         Assert.assertFalse(test);
     }
 
-    ArrayList<User>lst = new ArrayList<>();
-
-
     @Test
     public void inviteFriend() throws NoSuchAlgorithmException {
         generateUser();
@@ -59,7 +54,6 @@ public class UserServiceTests {
         user.createGroup(user.getUserName(), "Hello", true);
         test = user.inviteFriend("nam", UUID.fromString(""));
         Assert.assertTrue(test);
-
     }
 
     @Test
@@ -137,8 +131,48 @@ public class UserServiceTests {
             test = false;
         }
         Assert.assertTrue(test);
-
     }
+
+    @Test
+    public void removeMessageInGroup() throws NoSuchAlgorithmException{
+        generateUser();
+        boolean test = true;
+        User user1 = userService.Login("bao", "123");
+        User user2 = userService.Login("nam", "123");
+
+        user1.createGroup(user1.getUserName(), "Hello", false);
+        PublicGroup publicGroup = DataStore.getInstance().getLstPubGroup().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+
+        user2.joinGroup(publicGroup.getCode(), user2, publicGroup.getId());
+        user2.sendMessageinGroup("abc",publicGroup);
+        user2.removeMessageInGroup("abc",publicGroup.getNameGroup(),false);
+        ArrayList<Message> message = user2.getTopLastestMessageinM(1,user2.getUserName());
+        if(message.size()!=0){
+            test=false;
+        }
+        Assert.assertTrue(test);
+    }
+
+
+    @Test
+    public void leaveGroup() throws NoSuchAlgorithmException{
+        generateUser();
+//        boolean test = true;
+        User user1 = userService.Login("bao", "123");
+        User user2 = userService.Login("nam", "123");
+        User user3 = userService.Login("bao1", "123");
+
+        user1.createGroup(user1.getUserName(), "Hello", false);
+        PublicGroup publicGroup = DataStore.getInstance().getLstPubGroup().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+
+        user2.joinGroup(publicGroup.getCode(), user2, publicGroup.getId());
+        user3.joinGroup(publicGroup.getCode(), user3, publicGroup.getId());
+        user2.leaveGroup(publicGroup.getNameGroup(),false);
+        Assert.assertEquals(1, publicGroup.getSize());
+    }
+
+
+
 
 
 
