@@ -15,8 +15,5 @@ public class PublicGroup extends Group {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
 
 }

@@ -33,17 +33,20 @@ public class User extends Notification {
         return user;
     }
 
-    public String getCode() {
+    public String generateCode() {
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String fullalphabet = alphabet + alphabet.toLowerCase() + "123456789";
         Random random = new Random();
-        char code = fullalphabet.charAt(random.nextInt(7));
-        return Character.toString(code);
+        String code = "";
+        for (int i = 0; i < 7; i++) {
+            code += fullalphabet.charAt(random.nextInt(fullalphabet.length()));
+        }
+        return code;
     }
 
     public void createGroup(String owner, String nGroup, boolean isPrivate) {
         if (isPrivate == false) {
-            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()), getCode());
+            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()), generateCode());
             DataStore.getInstance().getLstPubGroup().add(pubGroup);
         } else {
             PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()));
@@ -90,17 +93,16 @@ public class User extends Notification {
 
     public boolean receiveMessage(String message, String owner) {
         Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
-        boolean check = false;
         if (box != null) {
             box.getMessages().add(new Message(owner, message));
             getBoxes().remove(box);
             getBoxes().add(box);
-            return check=false;
+            return false;
         } else {
             Box newBox = new Box(owner, new ArrayList<Message>());
             newBox.getMessages().add(new Message(owner, message));
             getBoxes().add(newBox);
-            return check=true;
+            return true;
         }
     }
 

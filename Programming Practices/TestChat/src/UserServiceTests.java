@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 public class UserServiceTests {
     UserService userService = new UserService();
-    DataStore dataStore = new DataStore();
+
     ArrayList box = new ArrayList<Box>();
 
     public void generateUser() throws NoSuchAlgorithmException {
@@ -48,7 +48,6 @@ public class UserServiceTests {
         Assert.assertFalse(test);
     }
 
-
     ArrayList<User>lst = new ArrayList<>();
 
 
@@ -66,11 +65,13 @@ public class UserServiceTests {
     @Test
     public void joinGroup() throws NoSuchAlgorithmException {
         generateUser();
-        PublicGroup publicGroup = dataStore.getLstPubGroup().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
-//        User user = userService.Login("bao","123");
-//        user.joinGroup("abc",user,publicGroup);
-//        boolean test = user.joinGroup("abc",user,user.getData().lstPubGroup.stream().filter(x->x.getNameGroup().equals("bao")).findAny().orElse(null));
-//        Assert.assertTrue(test);
+        User user1 = userService.Login("bao", "123");
+        User user2 = userService.Login("nam", "123");
+        user1.createGroup(user1.getUserName(), "Hello", false);
+        PublicGroup publicGroup = DataStore.getInstance().getLstPubGroup().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        user2.joinGroup(publicGroup.getCode(), user2, publicGroup.getId());
+        boolean test = publicGroup.getGroupMembers().contains(user2);
+        Assert.assertTrue(test);
     }
 
     @Test
