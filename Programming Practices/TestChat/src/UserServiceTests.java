@@ -66,7 +66,7 @@ public class UserServiceTests {
     @Test
     public void joinGroup() throws NoSuchAlgorithmException {
         generateUser();
-        PublicGroup publicGroup = dataStore.lstPubGroup.stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
+        PublicGroup publicGroup = dataStore.getLstPubGroup().stream().filter(x -> x.getNameGroup().equals("Hello")).findAny().orElse(null);
 //        User user = userService.Login("bao","123");
 //        user.joinGroup("abc",user,publicGroup);
 //        boolean test = user.joinGroup("abc",user,user.getData().lstPubGroup.stream().filter(x->x.getNameGroup().equals("bao")).findAny().orElse(null));

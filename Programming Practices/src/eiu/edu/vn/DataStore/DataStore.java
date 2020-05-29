@@ -6,9 +6,9 @@ import java.util.List;
 
 public class DataStore {
     private static DataStore uniqInstance;
-    public ArrayList<User> lstUser;
-    public ArrayList<PublicGroup> lstPubGroup;
-    public ArrayList<PrivateGroup> lstPriGroup;
+    private ArrayList<User> lstUser;
+    private ArrayList<PublicGroup> lstPubGroup;
+    private ArrayList<PrivateGroup> lstPriGroup;
 
     public DataStore() {
         this.lstUser = new ArrayList<User>();
