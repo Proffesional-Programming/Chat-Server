@@ -46,10 +46,10 @@ public class User extends Notification {
 
     public void createGroup(String owner, String nGroup, boolean isPrivate) {
         if (isPrivate == false) {
-            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()), generateCode());
+            PublicGroup pubGroup = new PublicGroup(UUID.randomUUID(), nGroup, owner, new Box(new ArrayList<Message>()), generateCode());
             DataStore.getInstance().getLstPubGroup().add(pubGroup);
         } else {
-            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box(owner, new ArrayList<Message>()));
+            PrivateGroup priGroup = new PrivateGroup(UUID.randomUUID(), nGroup, owner, new Box(new ArrayList<Message>()));
             DataStore.getInstance().getLstPriGroup().add(priGroup);
         }
     }
@@ -91,6 +91,18 @@ public class User extends Notification {
         return check;
     }
 
+    public void putAlais(String alais, String username) {
+        Box box = getBoxes().stream().filter(x -> x.getOwner().equals(username)).findAny().orElse(null);
+        if (box != null) {
+            box.setAlias(alais);
+            getBoxes().remove(box);
+            getBoxes().add(box);
+        } else {
+            Box newBox = new Box(username, alais, new ArrayList<Message>());
+            getBoxes().add(newBox);
+        }
+    }
+
     public boolean receiveMessage(String message, String owner) {
         Box box = getBoxes().stream().filter(x -> x.getOwner().equals(owner)).findAny().orElse(null);
         if (box != null) {
@@ -99,7 +111,7 @@ public class User extends Notification {
             getBoxes().add(box);
             return false;
         } else {
-            Box newBox = new Box(owner, new ArrayList<Message>());
+            Box newBox = new Box(owner, "", new ArrayList<Message>());
             newBox.getMessages().add(new Message(owner, message));
             getBoxes().add(newBox);
             return true;
