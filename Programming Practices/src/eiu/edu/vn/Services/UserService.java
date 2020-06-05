@@ -35,7 +35,7 @@ public class UserService {
         return hexString.toString();
     }
 
-    public User Login(String userName, String password) throws NoSuchAlgorithmException {
+    public User login(String userName, String password) throws NoSuchAlgorithmException {
         String hashdedPassword = toHashPassword(getSHA(password));
         User findUser = dataStore.getLstUser().stream().filter(user -> userName.equals(user.getUserName()) && hashdedPassword.equals(user.getHashPassword()))
                 .findAny()

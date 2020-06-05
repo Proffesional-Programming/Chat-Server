@@ -104,7 +104,7 @@ public class Group extends Notification {
         return lstMessages;
     }
 
-    public void delMessage(String message, String owner) {
+    public void deleteMessage(String message, String owner) {
         Message m = getBox().getMessages().stream().filter(x -> x.getMessage().equals(message) && x.getSender().equals(owner)).findAny().orElse(null);
         if (m != null) {
             getBox().getMessages().remove(m);
